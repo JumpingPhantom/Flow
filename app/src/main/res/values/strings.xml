@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Flow</string>
+    <string name="add_a_new_transaction">Add a new transaction</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="balance">Balance</string>
+    <string name="expenses">Expenses</string>
+</resources>
