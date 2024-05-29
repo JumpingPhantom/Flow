@@ -44,7 +44,7 @@ fun ExpensesAndIncomePieChart(incomeAmount: Float, expenseAmount: Float) {
             Canvas(modifier = Modifier.size(300.dp)) {
                 val sum = incomeAmount + expenseAmount
                 var startAngle = -90f
-                var sweepAngle = calculateSweepAngle(incomeAmount, 100.0f)
+                var sweepAngle = calculateSweepAngle(incomeAmount, sum)
 
                 scale(0.8f) {
                     drawArc(

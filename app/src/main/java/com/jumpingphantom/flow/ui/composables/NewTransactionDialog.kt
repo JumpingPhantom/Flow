@@ -14,7 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -31,7 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import com.jumpingphantom.flow.R
-import com.jumpingphantom.flow.data.model.Transaction
+import com.jumpingphantom.flow.data.entity.Transaction
+import com.jumpingphantom.flow.util.SimpleDatabase
 import java.time.LocalDate
 
 @Composable
@@ -64,7 +65,7 @@ fun NewTransactionDialog(showDialog: MutableState<Boolean>) {
 
                     Spacer(modifier = Modifier.padding(8.dp))
 
-                    Row {
+                    Row(modifier = Modifier) {
                         if (isExpenseSelected.value) {
                             ExpensesCategoryMenu()
                         } else {
@@ -76,7 +77,11 @@ fun NewTransactionDialog(showDialog: MutableState<Boolean>) {
 
                     Spacer(modifier = Modifier.padding(8.dp))
 
-                    Row {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         AddTransactionButton(showDialog, amount, isExpenseSelected)
                     }
                 }
@@ -167,20 +172,20 @@ fun AddTransactionButton(
     amount: MutableState<String>,
     isExpenseSelected: MutableState<Boolean>
 ) {
-    IconButton(onClick = { /*TODO*/ }) {
-
-    }
     Button(
         onClick = {
-            addTransaction(
-                Transaction(
-                    amount.value.toFloat(),
-                    "",
-                    "",
-                    LocalDate.now(),
-                    isExpenseSelected.value
+            if (amount.value != "") {
+                addTransaction(
+                    Transaction(
+                        0,
+                        amount.value.toFloat(),
+                        "",
+                        "",
+                        LocalDate.now(),
+                        isExpenseSelected.value
+                    )
                 )
-            )
+            }
             showDialog.value = false
         },
         shape = MaterialTheme.shapes.small,
@@ -192,4 +197,5 @@ fun AddTransactionButton(
 }
 
 fun addTransaction(transaction: Transaction) {
+
 }
