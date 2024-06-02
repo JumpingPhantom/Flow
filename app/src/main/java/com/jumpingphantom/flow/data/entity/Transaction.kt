@@ -8,8 +8,8 @@ import java.time.LocalDate
 data class Transaction(
     @PrimaryKey(autoGenerate = true) val uid: Int,
     val amount: Float,
-    val category: String?,
-    val description: String?,
+    val category: String? = "",
+    val description: String? = "",
     val date: LocalDate,
     val isIncome: Boolean
 )

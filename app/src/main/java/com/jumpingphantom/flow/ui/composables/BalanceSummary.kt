@@ -14,9 +14,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableFloatState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.scale
@@ -24,13 +31,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jumpingphantom.flow.R
+import com.jumpingphantom.flow.data.entity.Transaction
 import com.jumpingphantom.flow.util.Util
+import com.jumpingphantom.flow.viewmodel.TransactionViewmodel
 
 @Composable
-fun BalanceSummary(incomeAmount: Float, expenseAmount: Float) {
-    ExpensesAndIncomePieChart(incomeAmount, expenseAmount)
+fun BalanceSummary(
+    incomeAmount: Float, expenseAmount: Float, transactionViewmodel: TransactionViewmodel
+) {
+    val income = remember { mutableFloatStateOf(0.0f) }
+    val expenses = remember { mutableFloatStateOf(0.0f) }
+
+    LaunchedEffect(Unit) {
+        income.floatValue = transactionViewmodel.incomeSum().await().toFloat()
+        expenses.floatValue = transactionViewmodel.expensesSum().await().toFloat()
+    }
+
+    ExpensesAndIncomePieChart(income.floatValue, expenses.floatValue)
     Spacer(modifier = Modifier.height(16.dp))
-    CurrentBalance(incomeAmount, expenseAmount)
+    CurrentBalance(income, expenses)
 }
 
 @Composable
@@ -76,14 +95,11 @@ fun calculateSweepAngle(sliceValue: Float, totalValue: Float): Float {
 }
 
 @Composable
-fun CurrentBalance(incomeAmount: Float, expenseAmount: Float) {
-    val amount by remember { mutableFloatStateOf(incomeAmount - expenseAmount) }
-
+fun CurrentBalance(incomeAmount: MutableFloatState, expenseAmount: MutableFloatState) {
     Card(modifier = Modifier.padding(horizontal = 16.dp)) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxWidth()
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
@@ -93,7 +109,7 @@ fun CurrentBalance(incomeAmount: Float, expenseAmount: Float) {
                         modifier = Modifier
                     )
 
-                    Text(text = Util.formatCurrency(incomeAmount), modifier = Modifier)
+                    Text(text = Util.formatCurrency(incomeAmount.floatValue), modifier = Modifier)
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -104,13 +120,12 @@ fun CurrentBalance(incomeAmount: Float, expenseAmount: Float) {
                         modifier = Modifier
                     )
 
-                    Text(text = Util.formatCurrency(expenseAmount), modifier = Modifier)
+                    Text(text = Util.formatCurrency(expenseAmount.floatValue), modifier = Modifier)
                 }
             }
 
             Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxWidth()
             ) {
 
             }
@@ -129,7 +144,7 @@ fun CurrentBalance(incomeAmount: Float, expenseAmount: Float) {
                     )
 
                     Text(
-                        text = Util.formatCurrency(amount),
+                        text = Util.formatCurrency(incomeAmount.floatValue - expenseAmount.floatValue),
                         fontSize = MaterialTheme.typography.titleLarge.fontSize,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

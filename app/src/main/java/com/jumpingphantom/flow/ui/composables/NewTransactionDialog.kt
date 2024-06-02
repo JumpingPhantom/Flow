@@ -32,11 +32,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import com.jumpingphantom.flow.R
 import com.jumpingphantom.flow.data.entity.Transaction
-import com.jumpingphantom.flow.util.SimpleDatabase
+import com.jumpingphantom.flow.viewmodel.TransactionViewmodel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.LocalDate
 
 @Composable
-fun NewTransactionDialog(showDialog: MutableState<Boolean>) {
+fun NewTransactionDialog(showDialog: MutableState<Boolean>, viewmodel: TransactionViewmodel) {
 
     val amount = remember { mutableStateOf("") }
     val isIncomeSelected = remember { mutableStateOf(true) }
@@ -82,7 +83,7 @@ fun NewTransactionDialog(showDialog: MutableState<Boolean>) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        AddTransactionButton(showDialog, amount, isExpenseSelected)
+                        AddTransactionButton(showDialog, amount, isIncomeSelected, viewmodel)
                     }
                 }
             }
@@ -166,24 +167,24 @@ fun IncomeCategoryMenu() {
     // TODO : implement this
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun AddTransactionButton(
     showDialog: MutableState<Boolean>,
     amount: MutableState<String>,
-    isExpenseSelected: MutableState<Boolean>
+    isIncomeSelected: MutableState<Boolean>,
+    viewmodel: TransactionViewmodel
 ) {
     Button(
         onClick = {
             if (amount.value != "") {
                 addTransaction(
-                    Transaction(
-                        0,
-                        amount.value.toFloat(),
-                        "",
-                        "",
-                        LocalDate.now(),
-                        isExpenseSelected.value
-                    )
+                    amount.value.toFloat(),
+                    "",
+                    "",
+                    LocalDate.now(),
+                    isIncomeSelected.value,
+                    viewmodel
                 )
             }
             showDialog.value = false
@@ -196,6 +197,14 @@ fun AddTransactionButton(
     }
 }
 
-fun addTransaction(transaction: Transaction) {
-
+fun addTransaction(
+    amount: Float,
+    category: String?,
+    description: String?,
+    date: LocalDate,
+    isIncome: Boolean,
+    viewModel: TransactionViewmodel
+) {
+    val transaction = Transaction(0, amount, category, description, date, isIncome)
+    viewModel.setTransaction(transaction)
 }

@@ -25,16 +25,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.jumpingphantom.flow.data.repository.local.TransactionRepository
 import com.jumpingphantom.flow.ui.composables.BalanceSummary
 import com.jumpingphantom.flow.ui.composables.NewTransactionDialog
 import com.jumpingphantom.flow.ui.theme.FlowTheme
+import com.jumpingphantom.flow.util.SimpleDatabase
+import com.jumpingphantom.flow.viewmodel.TransactionViewmodel
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val transactionRepository =
+            TransactionRepository(SimpleDatabase.getInstance(this).transactionDao())
+        val transactionViewmodel = TransactionViewmodel(transactionRepository)
+
         setContent {
             FlowTheme {
                 val showDialog = remember { mutableStateOf(false) }
@@ -63,8 +70,8 @@ class MainActivity : ComponentActivity() {
                                 .padding(top = 8.dp)
                                 .fillMaxSize()
                         ) {
-                            BalanceSummary(0f, 0f)
-                            NewTransactionDialog(showDialog)
+                            BalanceSummary(0f, 0f, transactionViewmodel)
+                            NewTransactionDialog(showDialog, transactionViewmodel)
                         }
                         SmallFloatingActionButton(
                             onClick = { showDialog.value = true },
