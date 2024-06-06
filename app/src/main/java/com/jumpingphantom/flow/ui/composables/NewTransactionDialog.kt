@@ -37,7 +37,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.LocalDate
 
 @Composable
-fun NewTransactionDialog(showDialog: MutableState<Boolean>, viewmodel: TransactionViewmodel) {
+fun NewTransactionDialog(
+    showDialog: MutableState<Boolean>,
+    viewmodel: TransactionViewmodel
+) {
 
     val amount = remember { mutableStateOf("") }
     val isIncomeSelected = remember { mutableStateOf(true) }
@@ -207,4 +210,5 @@ fun addTransaction(
 ) {
     val transaction = Transaction(0, amount, category, description, date, isIncome)
     viewModel.setTransaction(transaction)
+    viewModel.updateIncomeAndExpenses()
 }
