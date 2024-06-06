@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.jumpingphantom.flow.data.repository.local.TransactionRepository
 import com.jumpingphantom.flow.ui.composables.BalanceSummary
 import com.jumpingphantom.flow.ui.composables.NewTransactionDialog
+import com.jumpingphantom.flow.ui.composables.TransactionsList
 import com.jumpingphantom.flow.ui.theme.FlowTheme
 import com.jumpingphantom.flow.util.SimpleDatabase
 import com.jumpingphantom.flow.viewmodel.TransactionViewmodel
@@ -70,8 +72,10 @@ class MainActivity : ComponentActivity() {
                                 .padding(top = 8.dp)
                                 .fillMaxSize()
                         ) {
-                            BalanceSummary(0f, 0f, transactionViewmodel)
+                            BalanceSummary(transactionViewmodel)
                             NewTransactionDialog(showDialog, transactionViewmodel)
+                            Spacer(Modifier.padding(8.dp))
+                            TransactionsList(transactionViewmodel)
                         }
                         SmallFloatingActionButton(
                             onClick = { showDialog.value = true },
