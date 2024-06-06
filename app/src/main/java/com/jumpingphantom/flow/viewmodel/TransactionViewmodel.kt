@@ -1,6 +1,7 @@
 package com.jumpingphantom.flow.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.MutableFloatState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,27 +12,37 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class TransactionViewmodel(private val repository: TransactionRepository) : ViewModel() {
-    fun getTransactions() = viewModelScope.async {
-        repository.getTransactions()
+    var incomeTotal = MutableLiveData(0f)
+    var expensesTotal = MutableLiveData(0f)
+
+    init {
+        viewModelScope.launch {
+            incomeTotal.value = incomeSum().await().toFloat()
+            expensesTotal.value = expensesSum().await().toFloat()
+        }
     }
+
+    fun getTransactions(): LiveData<List<Transaction>> = repository.getTransactions()
 
     fun setTransaction(transaction: Transaction) = viewModelScope.launch {
         repository.setTransaction(transaction)
+        updateIncomeAndExpenses()
     }
 
     fun deleteTransaction(transaction: Transaction) = viewModelScope.launch {
         repository.deleteTransaction(transaction)
     }
 
-    fun incomeSum() = viewModelScope.async {
+    private fun incomeSum() = viewModelScope.async {
         repository.incomeSum().sumOf { it.toDouble() }
     }
 
-    fun expensesSum() = viewModelScope.async {
+    private fun expensesSum() = viewModelScope.async {
         repository.expensesSum().sumOf { it.toDouble() }
     }
 
-//    fun printTransactions() = viewModelScope.launch {
-//        Log.i("::DATABASE::", "${incomeSum().await()} - ${expensesSum().await()}")
-//    }
+    fun updateIncomeAndExpenses() = viewModelScope.launch {
+        incomeTotal.value = incomeSum().await().toFloat()
+        expensesTotal.value = expensesSum().await().toFloat()
+    }
 }

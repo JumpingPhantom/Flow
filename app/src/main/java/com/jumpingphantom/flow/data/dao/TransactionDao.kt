@@ -1,5 +1,6 @@
 package com.jumpingphantom.flow.data.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -13,7 +14,7 @@ interface TransactionDao {
     @Delete
     suspend fun delete(transaction: Transaction)
     @Query("SELECT * FROM transactions")
-    suspend fun getAll(): List<Transaction>
+    fun getAll(): LiveData<List<Transaction>>
 
     @Query("SELECT amount FROM transactions WHERE isIncome = 1")
     suspend fun getIncome(): List<Float>
