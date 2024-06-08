@@ -1,7 +1,5 @@
 package com.jumpingphantom.flow.viewmodel
 
-import android.util.Log
-import androidx.compose.runtime.MutableFloatState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,6 +29,7 @@ class TransactionViewmodel(private val repository: TransactionRepository) : View
 
     fun deleteTransaction(transaction: Transaction) = viewModelScope.launch {
         repository.deleteTransaction(transaction)
+        updateIncomeAndExpenses()
     }
 
     private fun incomeSum() = viewModelScope.async {
