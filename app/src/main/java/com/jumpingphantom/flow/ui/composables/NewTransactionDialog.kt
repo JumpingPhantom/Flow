@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedFilterChip
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -94,7 +93,6 @@ fun NewTransactionDialog(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionTypeButtons(
     isIncomeSelected: MutableState<Boolean>,
@@ -180,7 +178,7 @@ fun AddTransactionButton(
 ) {
     Button(
         onClick = {
-            if (amount.value != "") {
+            if (amount.value != "" && amount.value.toFloat() > 0.009) {
                 addTransaction(
                     amount.value.toFloat(),
                     "",
