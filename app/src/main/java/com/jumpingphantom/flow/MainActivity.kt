@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jumpingphantom.flow.data.repository.local.TransactionRepository
 import com.jumpingphantom.flow.ui.composables.BalanceSummary
+import com.jumpingphantom.flow.ui.composables.FilterControls
 import com.jumpingphantom.flow.ui.composables.NewTransactionDialog
 import com.jumpingphantom.flow.ui.composables.TransactionsList
 import com.jumpingphantom.flow.ui.theme.FlowTheme
@@ -75,6 +76,7 @@ class MainActivity : ComponentActivity() {
                             BalanceSummary(transactionViewmodel)
                             NewTransactionDialog(showDialog, transactionViewmodel)
                             Spacer(Modifier.padding(8.dp))
+                            FilterControls()
                             TransactionsList(transactionViewmodel)
                         }
                         SmallFloatingActionButton(
