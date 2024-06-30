@@ -1,96 +1,31 @@
 package com.jumpingphantom.flow
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import com.jumpingphantom.flow.data.repository.local.TransactionRepository
-import com.jumpingphantom.flow.ui.composables.BalanceSummary
-import com.jumpingphantom.flow.ui.composables.FilterControls
-import com.jumpingphantom.flow.ui.composables.NewTransactionDialog
-import com.jumpingphantom.flow.ui.composables.TransactionsList
-import com.jumpingphantom.flow.ui.theme.FlowTheme
-import com.jumpingphantom.flow.util.SimpleDatabase
-import com.jumpingphantom.flow.viewmodel.TransactionViewmodel
+import androidx.compose.ui.platform.LocalContext
+import com.jumpingphantom.flow.core.ui.MainViewModel
+import com.jumpingphantom.flow.core.ui.theme.FlowTheme
+import com.jumpingphantom.flow.navigation.MainNavHost
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        val transactionRepository =
-            TransactionRepository(SimpleDatabase.getInstance(this).transactionDao())
-        val transactionViewmodel = TransactionViewmodel(transactionRepository)
-
         setContent {
-            FlowTheme {
-                val showDialog = remember { mutableStateOf(false) }
+            val context = LocalContext.current
+            (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = {
-                                Text(
-                                    text = resources.getString(R.string.app_name)
-                                )
-                            },
-                            colors = topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.primary,
-                            ),
-                            modifier = Modifier
-                        )
-                    },
-                    modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                                .fillMaxSize()
-                        ) {
-                            BalanceSummary(transactionViewmodel)
-                            NewTransactionDialog(showDialog, transactionViewmodel)
-                            Spacer(Modifier.padding(8.dp))
-                            FilterControls()
-                            TransactionsList(transactionViewmodel)
-                        }
-                        SmallFloatingActionButton(
-                            onClick = { showDialog.value = true },
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .offset(x = (-16).dp, y = (-16).dp)
-                        ) {
-                            Icon(Icons.Filled.Add, stringResource(R.string.add_a_new_transaction))
-                        }
-                    }
-                }
+            FlowTheme {
+                val mainViewModel = getViewModel<MainViewModel>()
+                MainNavHost()
             }
         }
     }
 }
-
